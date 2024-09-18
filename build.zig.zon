@@ -1,0 +1,17 @@
+.{
+    .name = "catch2",
+    .version = "3.7.1",
+    .minimum_zig_version = "0.12.0",
+    .dependencies = .{
+        .upstream = .{
+            .url = "git+https://github.com/catchorg/Catch2?ref=v3.7.1#fa43b77429ba76c462b1898d6cd2f2d7a9416b14",
+            .hash = "12203b77f3dc2161e6074743f5c9e7bcca49016380317e83bbc14ec293d80d9bb8fe",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "LICENSE",
+        "README.md",
+    },
+}
