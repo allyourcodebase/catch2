@@ -12,6 +12,7 @@ pub fn build(b: *std.Build) !void {
     const console_width = b.option(u32, "console-width", "Number of columns in the output: affects line wraps. (Defaults to 80)") orelse 80;
     const fast_compile = b.option(bool, "fast-compile", "Sacrifices some (rather minor) features for compilation speed") orelse false;
     const disable = b.option(bool, "disable", "Disables assertions and test case registration") orelse false;
+    const default_reporter = b.option([]const u8, "default-reporter", "Choose the reporter to use when it is not specified via the --reporter option. (Defaults to 'console')") orelse "console";
 
     const config = b.addConfigHeader(
         .{
@@ -23,7 +24,7 @@ pub fn build(b: *std.Build) !void {
             .CATCH_CONFIG_CONSOLE_WIDTH = console_width,
             .CATCH_CONFIG_FAST_COMPILE = fast_compile,
             .CATCH_CONFIG_DISABLE = disable,
-            .CATCH_CONFIG_DEFAULT_REPORTER = null,
+            .CATCH_CONFIG_DEFAULT_REPORTER = default_reporter,
             .CATCH_CONFIG_FALLBACK_STRINGIFIER = null,
         },
     );
@@ -49,8 +50,8 @@ pub fn build(b: *std.Build) !void {
     test_exe.addIncludePath(upstream.path("tests/SelfTest"));
     test_exe.addCSourceFiles(.{ .root = upstream.path("tests/SelfTest"), .files = &test_files, .flags = &CXXFLAGS });
     test_exe.linkLibCpp();
-    const install_test = b.addInstallArtifact(test_exe, .{});
-    test_step.dependOn(&install_test.step);
+    const run_test = b.addRunArtifact(test_exe);
+    test_step.dependOn(&run_test.step);
 
     const libs = [_]*std.Build.Step.Compile{ catch2, with_main };
     for (libs) |lib| {
