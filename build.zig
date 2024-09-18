@@ -35,6 +35,7 @@ pub fn build(b: *std.Build) !void {
         .flags = &CXXFLAGS,
     });
     catch2.installConfigHeader(config);
+    catch2.installHeadersDirectory(upstream.path("src"), "", .{ .include_extensions = &.{".hpp"} });
 
     const with_main = b.addStaticLibrary(.{ .name = "Catch2WithMain", .target = target, .optimize = optimize });
     with_main.addCSourceFiles(.{
@@ -43,12 +44,21 @@ pub fn build(b: *std.Build) !void {
         .flags = &CXXFLAGS,
     });
 
+    const test_step = b.step("test", "Run tests");
+    const test_exe = b.addExecutable(.{ .name = "SelfTest", .target = target, .optimize = optimize });
+    test_exe.addIncludePath(upstream.path("tests/SelfTest"));
+    test_exe.addCSourceFiles(.{ .root = upstream.path("tests/SelfTest"), .files = &test_files, .flags = &CXXFLAGS });
+    test_exe.linkLibCpp();
+    const install_test = b.addInstallArtifact(test_exe, .{});
+    test_step.dependOn(&install_test.step);
+
     const libs = [_]*std.Build.Step.Compile{ catch2, with_main };
     for (libs) |lib| {
         lib.linkLibCpp();
         lib.addIncludePath(upstream.path("src"));
         lib.addConfigHeader(config);
         b.installArtifact(lib);
+        test_exe.linkLibrary(lib);
     }
 }
 
@@ -170,4 +180,65 @@ const source_files = .{
     "reporters/catch_reporter_tap.cpp",
     "reporters/catch_reporter_teamcity.cpp",
     "reporters/catch_reporter_xml.cpp",
+};
+
+const test_files = .{
+    "TestRegistrations.cpp",
+    "IntrospectiveTests/Algorithms.tests.cpp",
+    "IntrospectiveTests/AssertionHandler.tests.cpp",
+    "IntrospectiveTests/Clara.tests.cpp",
+    "IntrospectiveTests/CmdLine.tests.cpp",
+    "IntrospectiveTests/CmdLineHelpers.tests.cpp",
+    "IntrospectiveTests/ColourImpl.tests.cpp",
+    "IntrospectiveTests/Details.tests.cpp",
+    "IntrospectiveTests/FloatingPoint.tests.cpp",
+    "IntrospectiveTests/GeneratorsImpl.tests.cpp",
+    "IntrospectiveTests/Integer.tests.cpp",
+    "IntrospectiveTests/InternalBenchmark.tests.cpp",
+    "IntrospectiveTests/Json.tests.cpp",
+    "IntrospectiveTests/Parse.tests.cpp",
+    "IntrospectiveTests/PartTracker.tests.cpp",
+    "IntrospectiveTests/RandomNumberGeneration.tests.cpp",
+    "IntrospectiveTests/Reporters.tests.cpp",
+    "IntrospectiveTests/Tag.tests.cpp",
+    "IntrospectiveTests/TestCaseInfoHasher.tests.cpp",
+    "IntrospectiveTests/TestSpec.tests.cpp",
+    "IntrospectiveTests/TestSpecParser.tests.cpp",
+    "IntrospectiveTests/TextFlow.tests.cpp",
+    "IntrospectiveTests/Sharding.tests.cpp",
+    "IntrospectiveTests/Stream.tests.cpp",
+    "IntrospectiveTests/String.tests.cpp",
+    "IntrospectiveTests/StringManip.tests.cpp",
+    "IntrospectiveTests/Xml.tests.cpp",
+    "IntrospectiveTests/Traits.tests.cpp",
+    "IntrospectiveTests/ToString.tests.cpp",
+    "IntrospectiveTests/UniquePtr.tests.cpp",
+    "helpers/parse_test_spec.cpp",
+    "TimingTests/Sleep.tests.cpp",
+    "UsageTests/Approx.tests.cpp",
+    "UsageTests/BDD.tests.cpp",
+    "UsageTests/Benchmark.tests.cpp",
+    "UsageTests/Class.tests.cpp",
+    "UsageTests/Compilation.tests.cpp",
+    "UsageTests/Condition.tests.cpp",
+    "UsageTests/Decomposition.tests.cpp",
+    "UsageTests/EnumToString.tests.cpp",
+    "UsageTests/Exception.tests.cpp",
+    "UsageTests/Generators.tests.cpp",
+    "UsageTests/Message.tests.cpp",
+    "UsageTests/Misc.tests.cpp",
+    "UsageTests/Skip.tests.cpp",
+    "UsageTests/ToStringByte.tests.cpp",
+    "UsageTests/ToStringChrono.tests.cpp",
+    "UsageTests/ToStringGeneral.tests.cpp",
+    "UsageTests/ToStringOptional.tests.cpp",
+    "UsageTests/ToStringPair.tests.cpp",
+    "UsageTests/ToStringTuple.tests.cpp",
+    "UsageTests/ToStringVariant.tests.cpp",
+    "UsageTests/ToStringVector.tests.cpp",
+    "UsageTests/ToStringWhich.tests.cpp",
+    "UsageTests/Tricky.tests.cpp",
+    "UsageTests/VariadicMacros.tests.cpp",
+    "UsageTests/MatchersRanges.tests.cpp",
+    "UsageTests/Matchers.tests.cpp",
 };
