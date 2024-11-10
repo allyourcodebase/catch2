@@ -1,0 +1,18 @@
+.{
+    .name = "cath2UsageDemo",
+    .version = "1.0.0",
+    .dependencies = .{
+        .catch2 = .{
+            .url = "..",
+            .hash = "1220aef10cc88ccd919517ece637e54cfd7381c91ab9ee79a2d0d8791165ccd6bfff",
+        },
+    },
+    .minimum_zig_version = "0.12.0",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "include",
+        "test",
+    },
+}

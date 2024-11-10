@@ -29,7 +29,7 @@ pub fn build(b: *std.Build) !void {
         },
     );
 
-    const catch2 = b.addStaticLibrary(.{ .name = "catch2", .target = target, .optimize = optimize });
+    const catch2 = b.addStaticLibrary(.{ .name = "Catch2", .target = target, .optimize = optimize });
     catch2.addCSourceFiles(.{
         .root = upstream.path("src/catch2"),
         .files = &source_files,
