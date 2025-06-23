@@ -1,6 +1,6 @@
 .{
     .name = .catch2,
-    .version = "3.8.0",
+    .version = "3.8.1",
     .fingerprint = 0x50cf7037cefab352,
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
