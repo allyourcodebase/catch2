@@ -6,10 +6,9 @@ pub fn build(b: *std.Build) !void {
 
     const include = b.path("include");
 
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "demo",
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{ .target = target, .optimize = optimize }),
     });
     lib.addIncludePath(include);
     lib.addCSourceFiles(.{
@@ -23,7 +22,10 @@ pub fn build(b: *std.Build) !void {
 
     { // Test
         const test_step = b.step("test", "Run tests");
-        const test_exe = b.addExecutable(.{ .name = "test_demo", .target = target, .optimize = optimize });
+        const test_exe = b.addExecutable(.{
+            .name = "test_demo",
+            .root_module = b.createModule(.{ .target = target, .optimize = optimize }),
+        });
         const run_test = b.addRunArtifact(test_exe);
 
         const catch2_dep = b.dependency("catch2", .{ .target = target, .optimize = optimize });
