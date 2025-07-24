@@ -29,7 +29,7 @@ pub fn build(b: *std.Build) !void {
         },
     );
 
-    const catch2 = b.addStaticLibrary(.{ .name = "Catch2", .target = target, .optimize = optimize });
+    const catch2 = b.addLibrary(.{ .name = "Catch2", .root_module = b.createModule(.{ .target = target, .optimize = optimize }) });
     catch2.addCSourceFiles(.{
         .root = upstream.path("src/catch2"),
         .files = &source_files,
@@ -38,7 +38,7 @@ pub fn build(b: *std.Build) !void {
     catch2.installConfigHeader(config);
     catch2.installHeadersDirectory(upstream.path("src"), "", .{ .include_extensions = &.{".hpp"} });
 
-    const with_main = b.addStaticLibrary(.{ .name = "Catch2WithMain", .target = target, .optimize = optimize });
+    const with_main = b.addLibrary(.{ .name = "Catch2WithMain", .root_module = b.createModule(.{ .target = target, .optimize = optimize }) });
     with_main.addCSourceFiles(.{
         .root = upstream.path("src/catch2/internal"),
         .files = &.{"catch_main.cpp"},
@@ -46,7 +46,7 @@ pub fn build(b: *std.Build) !void {
     });
 
     const test_step = b.step("test", "Run tests");
-    const test_exe = b.addExecutable(.{ .name = "SelfTest", .target = target, .optimize = optimize });
+    const test_exe = b.addExecutable(.{ .name = "SelfTest", .root_module = b.createModule(.{ .target = target, .optimize = optimize }) });
     test_exe.addIncludePath(upstream.path("tests/SelfTest"));
     test_exe.addCSourceFiles(.{ .root = upstream.path("tests/SelfTest"), .files = &test_files, .flags = &CXXFLAGS });
     test_exe.linkLibCpp();
