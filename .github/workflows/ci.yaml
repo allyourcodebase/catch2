@@ -20,7 +20,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: mlugg/setup-zig@v2
         with:
           version: ${{ matrix.zig-version }}
@@ -30,3 +29,6 @@ jobs:
 
       - name: Run tests
         run: zig build test --summary all
+
+      - name: Build & Run example tests
+        run: cd example && zig build test --summary all

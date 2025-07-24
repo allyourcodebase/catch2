@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .upstream = .{
-            .url = "git+https://github.com/catchorg/Catch2?ref=v3.8.1#2b60af89e23d28eefc081bc930831ee9d45ea58b",
-            .hash = "N-V-__8AAO3mgQBaDEOVI1ObbA0x1JuYLIjm8Drv1qESd6Ac",
+            .url = "git+https://github.com/catchorg/Catch2?ref=v3.9.0#fee81626d2a4811095c3a39d20fb355eeb954101",
+            .hash = "N-V-__8AABqDggBorjRZPI-2m5f6s7F0rf2kYstU45k1haYX",
         },
     },
     .paths = .{
