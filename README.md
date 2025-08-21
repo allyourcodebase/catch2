@@ -4,10 +4,13 @@ Provides a package to be used by the zig package manager for C++ programs.
 
 ## Status
 
-Building with Zig `0.15` will be possible once this issue is resolved: [Build fails on clang 20](https://github.com/catchorg/Catch2/issues/2991)
+Building with Zig `0.15` will be possible once this issue is resolved:
+- [Build fails on clang 20](https://github.com/catchorg/Catch2/issues/2991)
+- [Clang 20 regression](https://github.com/llvm/llvm-project/issues/140519)
 
 | Refname   | Catch2 version | Zig `0.15.x` | Zig `0.14.x` | Zig `0.13.x` | Zig `0.12.x` |
 |:----------|:---------------|:------------:|:------------:|:------------:|:------------:|
+| `3.9.1`   | `v3.9.1`       | ❌           | ✅           | ❌           | ❌           |
 | `3.9.0`   | `v3.9.0`       | ❌           | ✅           | ❌           | ❌           |
 | `3.8.1`   | `v3.8.1`       | ❌           | ✅           | ❌           | ❌           |
 | `3.8.0+1` | `v3.8.0`       | ❌           | ✅           | ❌           | ❌           |
