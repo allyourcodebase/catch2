@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        zig-version: ["0.14.1"]
+        zig-version: ["0.14.1", "master"]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
@@ -27,8 +27,8 @@ jobs:
       - name: Build
         run: zig build --summary all
 
-      - name: Run tests
-        run: zig build test --summary all
-
       - name: Build & Run example tests
         run: cd example && zig build test --summary all
+
+      - name: Run tests
+        run: zig build test --summary all
