@@ -1,18 +1,16 @@
 const std = @import("std");
 
-const version = .{ .major = 3, .minor = 10, .patch = 0 };
-
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-
-    const upstream = b.dependency("upstream", .{ .target = target, .optimize = optimize });
 
     const add_prefix = b.option(bool, "add-prefix", "Prefix all macros with CATCH_") orelse false;
     const console_width = b.option(u32, "console-width", "Number of columns in the output: affects line wraps. (Defaults to 80)") orelse 80;
     const fast_compile = b.option(bool, "fast-compile", "Sacrifices some (rather minor) features for compilation speed") orelse false;
     const disable = b.option(bool, "disable", "Disables assertions and test case registration") orelse false;
     const default_reporter = b.option([]const u8, "default-reporter", "Choose the reporter to use when it is not specified via the --reporter option. (Defaults to 'console')") orelse "console";
+
+    const upstream = b.dependency("upstream", .{});
 
     const config = b.addConfigHeader(
         .{
@@ -29,42 +27,68 @@ pub fn build(b: *std.Build) !void {
         },
     );
 
-    const catch2 = b.addLibrary(.{ .name = "Catch2", .root_module = b.createModule(.{ .target = target, .optimize = optimize }) });
-    catch2.addCSourceFiles(.{
+    const catch2 = b.addLibrary(.{
+        .name = "Catch2",
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+            .link_libcpp = true,
+        }),
+    });
+    catch2.root_module.addCSourceFiles(.{
         .root = upstream.path("src/catch2"),
         .files = &source_files,
         .flags = &CXXFLAGS,
     });
     catch2.installConfigHeader(config);
-    catch2.installHeadersDirectory(upstream.path("src"), "", .{ .include_extensions = &.{".hpp"} });
+    catch2.installHeadersDirectory(upstream.path("src"), "", .{
+        .include_extensions = &.{".hpp"},
+    });
 
-    const with_main = b.addLibrary(.{ .name = "Catch2WithMain", .root_module = b.createModule(.{ .target = target, .optimize = optimize }) });
-    with_main.addCSourceFiles(.{
-        .root = upstream.path("src/catch2/internal"),
-        .files = &.{"catch_main.cpp"},
+    const with_main = b.addLibrary(.{
+        .name = "Catch2WithMain",
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+            .link_libcpp = true,
+        }),
+    });
+    with_main.root_module.addCSourceFile(.{
+        .file = upstream.path("src/catch2/internal/catch_main.cpp"),
         .flags = &CXXFLAGS,
     });
 
-    const test_step = b.step("test", "Run tests");
-    const test_exe = b.addExecutable(.{ .name = "SelfTest", .root_module = b.createModule(.{ .target = target, .optimize = optimize }) });
-    test_exe.addIncludePath(upstream.path("tests/SelfTest"));
-    test_exe.addCSourceFiles(.{ .root = upstream.path("tests/SelfTest"), .files = &test_files, .flags = &CXXFLAGS });
-    test_exe.linkLibCpp();
-    const run_test = b.addRunArtifact(test_exe);
-    test_step.dependOn(&run_test.step);
-
-    const libs = [_]*std.Build.Step.Compile{ catch2, with_main };
+    const libs: []const *std.Build.Step.Compile = &.{ catch2, with_main };
     for (libs) |lib| {
-        lib.linkLibCpp();
-        lib.addIncludePath(upstream.path("src"));
-        lib.addConfigHeader(config);
+        lib.root_module.addIncludePath(upstream.path("src"));
+        lib.root_module.addConfigHeader(config);
         b.installArtifact(lib);
-        test_exe.linkLibrary(lib);
+    }
+
+    { // Testing
+        const test_step = b.step("test", "Run tests");
+        const test_exe = b.addExecutable(.{
+            .name = "SelfTest",
+            .root_module = b.createModule(.{
+                .target = target,
+                .optimize = optimize,
+                .link_libcpp = true,
+            }),
+        });
+        test_exe.root_module.addIncludePath(upstream.path("tests/SelfTest"));
+        test_exe.root_module.addCSourceFiles(.{
+            .root = upstream.path("tests/SelfTest"),
+            .files = &test_files,
+            .flags = &CXXFLAGS,
+        });
+        test_exe.root_module.linkLibrary(catch2);
+        test_exe.root_module.linkLibrary(with_main);
+        test_step.dependOn(&b.addRunArtifact(test_exe).step);
     }
 }
 
 const CXXFLAGS = .{
-    "--std=c++20",
+    "--std=c++23",
     "-Wall",
     "-Wextra",
     "-Werror",
