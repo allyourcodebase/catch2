@@ -10,6 +10,7 @@ pub const internal_sources = .{
     "generators/catch_generator_exception.cpp",
     "generators/catch_generators.cpp",
     "generators/catch_generators_random.cpp",
+    "generators/catch_generators_throw.cpp",
     "interfaces/catch_interfaces_capture.cpp",
     "interfaces/catch_interfaces_config.cpp",
     "interfaces/catch_interfaces_exception.cpp",
