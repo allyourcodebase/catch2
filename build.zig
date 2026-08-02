@@ -42,7 +42,7 @@ pub fn build(b: *std.Build) !void {
         .flags = &CXXFLAGS,
     });
     catch2.installConfigHeader(config);
-    catch2.installHeadersDirectory(upstream.path("src"), "", .{
+    catch2.installHeadersDirectory(upstream.path("src"), ".", .{
         .include_extensions = &.{".hpp"},
     });
 
