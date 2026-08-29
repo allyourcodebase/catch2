@@ -1,4 +1,5 @@
 pub const benchmark_sources = .{
+    "benchmark/catch_benchmark.cpp",
     "benchmark/catch_chronometer.cpp",
     "benchmark/detail/catch_analyse.cpp",
     "benchmark/detail/catch_benchmark_function.cpp",

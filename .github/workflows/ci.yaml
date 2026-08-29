@@ -20,10 +20,10 @@ jobs:
         include:
           - zig-version: "0.16.0"
             os: ubuntu-latest
-            run_tests: false
+            run_tests: true
           - zig-version: "0.15.2"
             os: ubuntu-latest
-            run_tests: false
+            run_tests: true
           - zig-version: "0.14.1"
             os: ubuntu-latest
             run_tests: true
